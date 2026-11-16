@@ -1,6 +1,7 @@
 {
   "domain": "huawei_sun",
   "name": "Huawei SUN2000",
+  "categories": ["energy.solar_batteries"],
   "codeowners": ["@bekovan"],
   "config_flow": true,
   "dependencies": ["modbus"],

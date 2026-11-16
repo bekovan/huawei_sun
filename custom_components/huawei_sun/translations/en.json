@@ -104,33 +104,9 @@
       "battery_forcible_discharge_power": {"name": "Forced discharge power"}
     },
     "select": {
-      "battery_working_mode": {
-        "name": "Working mode",
-        "state": {
-          "Adaptive": "Adaptive",
-          "Fixed charge/discharge": "Fixed charge/discharge",
-          "Maximise self-consumption": "Maximise self-consumption",
-          "Time of use (LG)": "Time of use (LG)",
-          "Fully fed to grid": "Fully fed to grid",
-          "Time of use (LUNA2000)": "Time of use (LUNA2000)",
-          "Third-party control": "Third-party control"
-        }
-      },
-      "battery_forcible_charge_discharge": {
-        "name": "Forced charge/discharge",
-        "state": {
-          "Stop": "Stop",
-          "Charge": "Charge",
-          "Discharge": "Discharge"
-        }
-      },
-      "battery_forcible_setting_mode": {
-        "name": "Forced charge/discharge end condition",
-        "state": {
-          "Time": "Time",
-          "State of charge": "State of charge"
-        }
-      }
+      "battery_working_mode": {"name": "Working mode"},
+      "battery_forcible_charge_discharge": {"name": "Forced charge/discharge"},
+      "battery_forcible_setting_mode": {"name": "Forced charge/discharge end condition"}
     },
     "switch": {
       "battery_charge_from_grid": {"name": "Charge from grid"}
