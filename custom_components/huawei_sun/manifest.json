@@ -1,0 +1,12 @@
+{
+  "domain": "huawei_sun",
+  "name": "Huawei SUN2000",
+  "codeowners": ["@bekovan"],
+  "config_flow": true,
+  "dependencies": ["modbus"],
+  "documentation": "https://github.com/bekovan/ha-huawei-sun",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/bekovan/ha-huawei-sun/issues",
+  "version": "0.1.0"
+}

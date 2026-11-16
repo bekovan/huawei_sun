@@ -1,0 +1,139 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to the inverter",
+        "description": "Enter the Modbus TCP address of the SUN2000. Port 8899 and unit ID 1 are the Huawei defaults.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Unit ID"
+        },
+        "data_description": {
+          "host": "IP address or hostname of the inverter or its Modbus bridge.",
+          "port": "Modbus TCP port. Huawei inverters normally listen on 8899.",
+          "unit_id": "Modbus unit (slave) ID. Huawei inverters normally use 1."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not read the inverter. Check the address, the unit ID and that Modbus TCP is enabled on the device."
+    },
+    "abort": {
+      "already_configured": "This inverter is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling",
+        "data": {
+          "scan_interval": "Scan interval"
+        },
+        "data_description": {
+          "scan_interval": "How often the inverter is polled, in seconds. A SUN2000 answers slowly; 30 seconds is a good default."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "pv1_voltage": {"name": "PV1 voltage"},
+      "pv1_current": {"name": "PV1 current"},
+      "pv2_voltage": {"name": "PV2 voltage"},
+      "pv2_current": {"name": "PV2 current"},
+      "input_power": {"name": "Input power"},
+      "phase_a_voltage": {"name": "Phase A voltage"},
+      "phase_b_voltage": {"name": "Phase B voltage"},
+      "phase_c_voltage": {"name": "Phase C voltage"},
+      "phase_a_current": {"name": "Phase A current"},
+      "phase_b_current": {"name": "Phase B current"},
+      "phase_c_current": {"name": "Phase C current"},
+      "active_power": {"name": "Active power"},
+      "reactive_power": {"name": "Reactive power"},
+      "power_factor": {"name": "Power factor"},
+      "grid_frequency": {"name": "Grid frequency"},
+      "efficiency": {"name": "Efficiency"},
+      "internal_temperature": {"name": "Internal temperature"},
+      "device_status": {"name": "Device status"},
+      "accumulated_yield_energy": {"name": "Total yield"},
+      "daily_yield_energy": {"name": "Daily yield"},
+      "monthly_yield_energy": {"name": "Monthly yield"},
+      "yearly_yield_energy": {"name": "Yearly yield"},
+      "battery_state_of_capacity": {"name": "Battery state of charge"},
+      "battery_power": {"name": "Battery power"},
+      "battery_bus_voltage": {"name": "Battery bus voltage"},
+      "battery_bus_current": {"name": "Battery bus current"},
+      "battery_temperature": {"name": "Battery temperature"},
+      "battery_running_status": {"name": "Battery running status"},
+      "battery_working_mode": {"name": "Battery working mode"},
+      "battery_rated_charge_power": {"name": "Battery rated charge power"},
+      "battery_rated_discharge_power": {"name": "Battery rated discharge power"},
+      "battery_day_charge": {"name": "Battery daily charge"},
+      "battery_day_discharge": {"name": "Battery daily discharge"},
+      "battery_total_charge": {"name": "Battery total charge"},
+      "battery_total_discharge": {"name": "Battery total discharge"},
+      "battery_rated_capacity": {"name": "Battery rated capacity"}
+    },
+    "binary_sensor": {
+      "problem": {
+        "name": "Problem",
+        "state": {
+          "on": "Alarm active",
+          "off": "No alarm"
+        }
+      },
+      "battery_connected": {
+        "name": "Battery connected",
+        "state": {
+          "on": "Connected",
+          "off": "Not connected"
+        }
+      }
+    },
+    "number": {
+      "active_power_limit": {"name": "Active power limit"},
+      "battery_max_charging_power": {"name": "Maximum charging power"},
+      "battery_max_discharging_power": {"name": "Maximum discharging power"},
+      "battery_charging_cutoff_soc": {"name": "Charging cutoff state of charge"},
+      "battery_discharging_cutoff_soc": {"name": "Discharging cutoff state of charge"},
+      "battery_grid_charge_cutoff_soc": {"name": "Grid charge cutoff state of charge"},
+      "battery_forced_period": {"name": "Forced charge/discharge period"},
+      "battery_forcible_target_soc": {"name": "Forced target state of charge"},
+      "battery_forcible_charge_power": {"name": "Forced charge power"},
+      "battery_forcible_discharge_power": {"name": "Forced discharge power"}
+    },
+    "select": {
+      "battery_working_mode": {
+        "name": "Working mode",
+        "state": {
+          "Adaptive": "Adaptive",
+          "Fixed charge/discharge": "Fixed charge/discharge",
+          "Maximise self-consumption": "Maximise self-consumption",
+          "Time of use (LG)": "Time of use (LG)",
+          "Fully fed to grid": "Fully fed to grid",
+          "Time of use (LUNA2000)": "Time of use (LUNA2000)",
+          "Third-party control": "Third-party control"
+        }
+      },
+      "battery_forcible_charge_discharge": {
+        "name": "Forced charge/discharge",
+        "state": {
+          "Stop": "Stop",
+          "Charge": "Charge",
+          "Discharge": "Discharge"
+        }
+      },
+      "battery_forcible_setting_mode": {
+        "name": "Forced charge/discharge end condition",
+        "state": {
+          "Time": "Time",
+          "State of charge": "State of charge"
+        }
+      }
+    },
+    "switch": {
+      "battery_charge_from_grid": {"name": "Charge from grid"}
+    }
+  }
+}
