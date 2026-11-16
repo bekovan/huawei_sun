@@ -32,7 +32,7 @@ Requires Home Assistant 2026.6.0 or newer.
    (category: Integration).
 2. Install **Huawei SUN2000**.
 3. Restart Home Assistant.
-4. Add the integration and enter the inverter's address.
+4. Add the integration and enter the inverter's address
 
 ### Manual
 
