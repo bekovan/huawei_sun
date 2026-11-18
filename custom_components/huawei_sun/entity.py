@@ -10,9 +10,7 @@ class HuaweiSunEntity(CoordinatorEntity[HuaweiSunCoordinator]):
 
     _attr_has_entity_name = True
 
-    def __init__(
-        self, coordinator: HuaweiSunCoordinator, component: str = ""
-    ) -> None:
+    def __init__(self, coordinator: HuaweiSunCoordinator, component: str = "") -> None:
         """Bind the entity to its coordinator and the device it belongs to."""
         super().__init__(coordinator)
         self._attr_device_info = coordinator.device_info_for(component)
