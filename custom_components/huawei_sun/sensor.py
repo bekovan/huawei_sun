@@ -1,7 +1,5 @@
 """Sensor platform for the Huawei SUN2000 integration."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 

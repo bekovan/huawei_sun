@@ -1,7 +1,5 @@
 """Base entity for the Huawei SUN2000 integration."""
 
-from __future__ import annotations
-
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .coordinator import HuaweiSunCoordinator

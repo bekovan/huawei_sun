@@ -16,7 +16,9 @@ Other L1 models serve the same holding-register map and should work. The
 battery blocks are optional: an inverter without a LUNA2000 sets up fine and
 simply creates no battery entities. The advanced forced charge/discharge
 registers (`47246`–`47249`) are optional too, so older firmware keeps the
-battery power limits, cutoffs and working mode without them.
+battery power limits, cutoffs and working mode without them. The external grid
+meter block (`37100`–`37138`) is optional as well: an inverter without one
+creates no Power meter device or meter entities.
 
 Only the registers this integration exposes are declared. Adding another
 register means adding a field to the register map and wiring it into a
@@ -60,6 +62,10 @@ Modbus client may hold the connection at a time.
 
 ## Entities
 
+Entities are grouped into three devices. The inverter is the parent; the
+**LUNA2000** battery and **Power meter** are separate child devices linked to
+it with `via_device_id`.
+
 ### Inverter
 
 - PV string voltage and current (2 strings)
@@ -72,6 +78,8 @@ Modbus client may hold the connection at a time.
 - Active power limit (writable, %, register `40125`)
 
 ### Battery (LUNA2000)
+
+The battery appears as its own **LUNA2000** device linked to the inverter.
 
 - State of charge, charge/discharge power, bus voltage and current
 - Battery temperature, running status and the working mode the unit reports
@@ -88,6 +96,8 @@ Modbus client may hold the connection at a time.
 | Charging cutoff state of charge | `47081` | % |
 | Discharging cutoff state of charge | `47082` | % |
 | Grid charge cutoff state of charge | `47088` | % |
+| Grid charge maximum power | `47244` | W, 0–20000, step 100 |
+| Peak Shaving SOC | `47955` | %, 0–100, step 0.1; optional block |
 | Forced charge/discharge period | `47083` | min |
 | Forced target state of charge | `47101` | % |
 | Working mode | `47086` | Adaptive … Third-party control. Writable, and distinct from the read-only *Battery working mode* sensor at `37006` |
@@ -97,21 +107,39 @@ Modbus client may hold the connection at a time.
 | Forced charge power | `47247` | W (optional block) |
 | Forced discharge power | `47249` | W (optional block) |
 
-Time-of-use and peak-shaving schedules are deliberately **not** implemented:
+Time-of-use and peak-shaving *schedules* are deliberately **not** implemented:
 they are large tables that are easy to corrupt and are better edited in the
-Huawei app or FusionSolar.
+Huawei app or FusionSolar. The single peak-shaving reserve at `47955` is exposed
+as a number when the inverter serves that register.
 
 Every write is bounds-checked in the vendored device library before it reaches
 the inverter, so a service call cannot store a nonsensical value.
+
+### Power meter (optional)
+
+When the inverter answers on registers `37100`–`37138`, the external grid meter
+is exposed as its own **Power meter** device:
+
+- Enabled by default: Active power, Power factor, Exported energy, Imported
+  energy
+- Disabled by default (enable them in the entity settings): meter status and
+  type, phase A/B/C voltage, current and power, line voltages A–B/B–C/C–A,
+  reactive power, grid frequency and reactive energy
+
+Exported energy is normalised with `abs()` because Huawei can report the raw
+counter as a negative value. Active power keeps its sign, so a negative value
+means export.
 
 ## Design notes
 
 - Telemetry at `32xxx`, the inverter's active power limit at `40125` and the
   battery settings at `47xxx` are all read with holding registers (function
   code 3), which is what Huawei serves them from.
-- The battery, the inverter settings block and the advanced forced settings
-  are probed once with `read_optional`. A block the firmware rejects becomes
-  `None`, and no entities are created for it.
+- The LUNA2000 and Power meter are separate devices linked to the inverter with
+  `via_device_id`. The split did not change any entity ID or unique ID.
+- The battery, the inverter settings block, the advanced forced settings, the
+  peak-shaving block and the grid meter are probed once with `read_optional`. A
+  block the firmware rejects becomes `None`, and no entities are created for it.
 - Lifetime energy sensors restore their last value, so a nightly inverter
   shutdown does not punch a hole in long-term statistics.
 - The vendored `vendor/huawei_modbus` package imports no Home Assistant module;

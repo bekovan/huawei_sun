@@ -1,7 +1,5 @@
 """Constants for the Huawei SUN2000 integration."""
 
-from __future__ import annotations
-
 from logging import Logger, getLogger
 from typing import Final
 

@@ -1,13 +1,9 @@
 """Config and options flow for the Huawei SUN2000 integration."""
 
-from __future__ import annotations
-
 import asyncio
 from typing import TYPE_CHECKING, Any
 
-from modbus_connection import ModbusError, ModbusTcpParams
 import probatio
-
 from homeassistant.components.modbus import async_get_temporary_unit
 from homeassistant.config_entries import (
     ConfigFlow,
@@ -25,6 +21,7 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
+from modbus_connection import ModbusError, ModbusTcpParams
 
 from .const import (
     CONF_SCAN_INTERVAL,

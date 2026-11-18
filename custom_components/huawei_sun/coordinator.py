@@ -1,18 +1,15 @@
 """DataUpdateCoordinator for the Huawei SUN2000 integration."""
 
-from __future__ import annotations
-
 from functools import cached_property
 from typing import TYPE_CHECKING
-
-from modbus_connection import ModbusError, ModbusTimeoutError
-from modbus_connection.model import UpdateReport
 
 from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from modbus_connection import ModbusError, ModbusTimeoutError
+from modbus_connection.model import UpdateReport
 
 from .const import DOMAIN, LOGGER, TIMEOUTS_BEFORE_DISCONNECT
 from .vendor.huawei_modbus import MANUFACTURER, MODEL
