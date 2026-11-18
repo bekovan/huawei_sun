@@ -53,6 +53,9 @@ async def async_setup_entry(
     # The first read establishes the link; a failure becomes ConfigEntryNotReady.
     await coordinator.async_config_entry_first_refresh()
 
+    # Register the inverter device up front; the battery links to its registry id.
+    coordinator.register_devices(hass)
+
     entry.runtime_data = HuaweiSunData(coordinator=coordinator)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True

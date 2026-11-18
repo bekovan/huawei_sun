@@ -20,11 +20,13 @@ from modbus_connection.model import Device, Raw, UpdateReport, read_optional
 from .components import (
     DIAGNOSTIC_BLOCKS,
     UPDATE_BLOCKS,
+    GridMeter,
     InverterIdentity,
     InverterSettings,
     InverterTelemetry,
     Luna2000ForcedSettings,
     Luna2000Overview,
+    Luna2000PeakShaving,
     Luna2000Settings,
     Luna2000Status,
     Luna2000Telemetry,
@@ -52,6 +54,7 @@ class HuaweiSun2000(Device):
         super().__init__(unit)
         self.identity = InverterIdentity(unit)
         self.telemetry = InverterTelemetry(unit)
+        self.grid_meter: GridMeter | None = None
         # Optional blocks; ``_async_setup`` decides which the device serves.
         self.settings: InverterSettings | None = None
         self.battery: Luna2000Telemetry | None = None
@@ -59,6 +62,7 @@ class HuaweiSun2000(Device):
         self.battery_status: Luna2000Status | None = None
         self.battery_settings: Luna2000Settings | None = None
         self.battery_forced: Luna2000ForcedSettings | None = None
+        self.battery_peak_shaving: Luna2000PeakShaving | None = None
 
     @property
     def battery_present(self) -> bool:
@@ -76,6 +80,9 @@ class HuaweiSun2000(Device):
         # The active-power limit register is not served by every firmware.
         self.settings = await read_optional(InverterSettings(self.modbus_unit))
 
+        # An external grid meter is optional; without one no meter entities exist.
+        self.grid_meter = await read_optional(GridMeter(self.modbus_unit))
+
         # The battery telemetry block doubles as the presence probe. Only a
         # device that answers it gets its other battery blocks read.
         self.battery = await read_optional(Luna2000Telemetry(self.modbus_unit))
@@ -87,6 +94,9 @@ class HuaweiSun2000(Device):
         self.battery_settings = await read_optional(Luna2000Settings(self.modbus_unit))
         self.battery_forced = await read_optional(
             Luna2000ForcedSettings(self.modbus_unit)
+        )
+        self.battery_peak_shaving = await read_optional(
+            Luna2000PeakShaving(self.modbus_unit)
         )
 
     async def async_update(self) -> UpdateReport:

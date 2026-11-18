@@ -103,6 +103,18 @@ STORAGE_CONNECT_STATUS: Final[Mapping[int, str]] = {
     45057: "Online",
 }
 
+#: External grid meter status (register 37100).
+METER_STATUS: Final[Mapping[int, str]] = {
+    0: "Offline",
+    1: "Normal",
+}
+
+#: External grid meter type (register 37125).
+METER_TYPE: Final[Mapping[int, str]] = {
+    0: "Single-phase",
+    1: "Three-phase",
+}
+
 #: Values that mean the battery unit is reachable.
 STORAGE_CONNECTED_VALUES: Final[frozenset[int]] = frozenset({32764, 45057})
 

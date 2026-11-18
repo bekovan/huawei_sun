@@ -77,7 +77,7 @@ class HuaweiSunSwitch(HuaweiSunEntity, SwitchEntity):
         description: HuaweiSwitchEntityDescription,
     ) -> None:
         """Initialize the setting."""
-        super().__init__(coordinator)
+        super().__init__(coordinator, description.component)
         self.entity_description = description
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{description.key}"
 

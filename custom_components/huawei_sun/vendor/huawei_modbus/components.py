@@ -168,6 +168,37 @@ class InverterSettings(Component):
 
 
 # ---------------------------------------------------------------------------
+# External grid meter
+# ---------------------------------------------------------------------------
+
+
+class GridMeter(Component):
+    """Measurements from the inverter's external grid meter."""
+
+    status = integer(37100, signed=False)
+    phase_a_voltage = gauge(37101, 0.1, signed=True, unit="V")
+    phase_b_voltage = gauge(37103, 0.1, signed=True, unit="V")
+    phase_c_voltage = gauge(37105, 0.1, signed=True, unit="V")
+    phase_a_current = gauge(37107, 0.01, signed=True, unit="A")
+    phase_b_current = gauge(37109, 0.01, signed=True, unit="A")
+    phase_c_current = gauge(37111, 0.01, signed=True, unit="A")
+    active_power = int32(37113, unit="W")
+    reactive_power = int32(37115, unit="var")
+    power_factor = gauge(37117, 0.001, signed=True)
+    frequency = gauge(37118, 0.01, signed=False, unit="Hz")
+    exported_energy = int32(37119, scale=0.01, unit="kWh")
+    accumulated_energy = int32(37121, scale=0.01, unit="kWh")
+    accumulated_reactive_power = int32(37123, scale=0.01, unit="kvarh")
+    meter_type = integer(37125, signed=False)
+    line_voltage_ab = gauge(37126, 0.1, signed=True, unit="V")
+    line_voltage_bc = gauge(37128, 0.1, signed=True, unit="V")
+    line_voltage_ca = gauge(37130, 0.1, signed=True, unit="V")
+    phase_a_power = int32(37132, unit="W")
+    phase_b_power = int32(37134, unit="W")
+    phase_c_power = int32(37136, unit="W")
+
+
+# ---------------------------------------------------------------------------
 # LUNA2000 battery
 # ---------------------------------------------------------------------------
 
@@ -254,6 +285,11 @@ class Luna2000Settings(Component):
         writable=SOC,
         unit="%",
     )
+    grid_charge_maximum_power = uint32(
+        47244,
+        writable=POWER_LIMIT,
+        unit="W",
+    )
     forcible_charge_discharge = integer(
         47100,
         signed=False,
@@ -294,15 +330,29 @@ class Luna2000ForcedSettings(Component):
     )
 
 
+class Luna2000PeakShaving(Component):
+    """Writable peak-shaving reserve level of the LUNA2000 battery."""
+
+    peak_shaving_soc = gauge(
+        47955,
+        0.1,
+        signed=False,
+        writable=SOC,
+        unit="%",
+    )
+
+
 #: Component attributes that are refreshed on every poll.
 UPDATE_BLOCKS: tuple[str, ...] = (
     "telemetry",
+    "grid_meter",
     "battery",
     "battery_overview",
     "battery_status",
     "settings",
     "battery_settings",
     "battery_forced",
+    "battery_peak_shaving",
 )
 
 #: Component attributes included in a diagnostics dump.

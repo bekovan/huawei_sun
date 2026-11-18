@@ -153,6 +153,45 @@ NUMBERS: tuple[HuaweiNumberEntityDescription, ...] = (
         ),
     ),
     HuaweiNumberEntityDescription(
+        key="battery_grid_charge_maximum_power",
+        translation_key="battery_grid_charge_maximum_power",
+        component="battery_settings",
+        report_name="battery_settings",
+        field="grid_charge_maximum_power",
+        native_min_value=0,
+        native_max_value=20_000,
+        native_step=100,
+        native_unit_of_measurement=UnitOfPower.WATT,
+        device_class=NumberDeviceClass.POWER,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+        icon="mdi:transmission-tower-import",
+        value_fn=lambda device: (
+            device.battery_settings.grid_charge_maximum_power
+            if device.battery_settings
+            else None
+        ),
+    ),
+    HuaweiNumberEntityDescription(
+        key="battery_peak_shaving_soc",
+        translation_key="battery_peak_shaving_soc",
+        component="battery_peak_shaving",
+        report_name="battery_peak_shaving",
+        field="peak_shaving_soc",
+        native_min_value=0,
+        native_max_value=100,
+        native_step=0.1,
+        native_unit_of_measurement=PERCENTAGE,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+        icon="mdi:battery-arrow-up",
+        value_fn=lambda device: (
+            device.battery_peak_shaving.peak_shaving_soc
+            if device.battery_peak_shaving
+            else None
+        ),
+    ),
+    HuaweiNumberEntityDescription(
         key="battery_forced_period",
         translation_key="battery_forced_period",
         component="battery_settings",
@@ -254,7 +293,7 @@ class HuaweiSunNumber(HuaweiSunEntity, NumberEntity):
         description: HuaweiNumberEntityDescription,
     ) -> None:
         """Initialize the setting."""
-        super().__init__(coordinator)
+        super().__init__(coordinator, description.component)
         self.entity_description = description
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{description.key}"
 

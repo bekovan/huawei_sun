@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING
 from modbus_connection import ModbusError, ModbusTimeoutError
 from modbus_connection.model import UpdateReport
 
+from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -50,6 +52,13 @@ class HuaweiSunCoordinator(DataUpdateCoordinator[UpdateReport]):
         self._poll = poll
         self._timeouts = 0
         self._failed: frozenset[str] = frozenset()
+        self._inverter_device_id: str | None = None
+
+    @cached_property
+    def inverter_identifier(self) -> tuple[str, str]:
+        """Registry identifier of the inverter device."""
+        serial_number = self.device.identity.serial_number
+        return (DOMAIN, serial_number or self.config_entry.entry_id)
 
     @cached_property
     def device_info(self) -> DeviceInfo:
@@ -57,13 +66,60 @@ class HuaweiSunCoordinator(DataUpdateCoordinator[UpdateReport]):
         identity = self.device.identity
         serial_number = identity.serial_number
         return DeviceInfo(
-            identifiers={(DOMAIN, serial_number or self.config_entry.entry_id)},
+            identifiers={self.inverter_identifier},
             manufacturer=MANUFACTURER,
             model=identity.model_name or MODEL,
             sw_version=identity.software_version or identity.firmware_version,
             serial_number=serial_number,
             name=self.config_entry.title,
         )
+
+    @callback
+    def register_devices(self, hass: HomeAssistant) -> None:
+        """Register the inverter before entities attach, so the battery can link."""
+        inverter = dr.async_get(hass).async_get_or_create(
+            config_entry_id=self.config_entry.entry_id,
+            **self.device_info,
+        )
+        self._inverter_device_id = inverter.id
+
+    @cached_property
+    def battery_device_info(self) -> DeviceInfo:
+        """Describe the attached LUNA2000 as a device of its own."""
+        battery = self.device.battery
+        serial_number: str | None = None
+        if battery is not None and battery.serial_number:
+            serial_number = battery.serial_number.strip() or None
+        identifier = serial_number or f"{self.config_entry.entry_id}_battery"
+        return DeviceInfo(
+            identifiers={(DOMAIN, identifier)},
+            manufacturer=MANUFACTURER,
+            model="LUNA2000",
+            serial_number=serial_number,
+            name="LUNA2000",
+            via_device_id=self._inverter_device_id,
+        )
+
+    @cached_property
+    def meter_device_info(self) -> DeviceInfo:
+        """Describe the external grid meter as a device of its own."""
+        inverter_serial = self.device.identity.serial_number
+        identifier = f"{inverter_serial or self.config_entry.entry_id}_meter"
+        return DeviceInfo(
+            identifiers={(DOMAIN, identifier)},
+            manufacturer=MANUFACTURER,
+            model="Power meter",
+            name="Power meter",
+            via_device_id=self._inverter_device_id,
+        )
+
+    def device_info_for(self, component: str) -> DeviceInfo:
+        """Return the device that owns one entity's register block."""
+        if component.startswith("battery"):
+            return self.battery_device_info
+        if component.startswith("grid_meter"):
+            return self.meter_device_info
+        return self.device_info
 
     async def async_write(self, component: str, field: str, value: object) -> None:
         """Write one setting and refresh the poll so entities follow it."""

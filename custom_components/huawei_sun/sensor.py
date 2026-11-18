@@ -28,6 +28,8 @@ from homeassistant.core import callback
 from .entity import HuaweiSunEntity
 from .vendor.huawei_modbus.values import (
     DEVICE_STATUS,
+    METER_STATUS,
+    METER_TYPE,
     STORAGE_STATUS,
     STORAGE_WORKING_MODE_B,
     label,
@@ -453,6 +455,261 @@ SENSORS: tuple[HuaweiSensorEntityDescription, ...] = (
             else None
         ),
     ),
+    # -- External grid meter -------------------------------------------------
+    HuaweiSensorEntityDescription(
+        key="meter_active_power",
+        translation_key="meter_active_power",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.POWER,
+        native_unit_of_measurement=UnitOfPower.WATT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        value_fn=lambda device: device.grid_meter.active_power,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_power_factor",
+        translation_key="meter_power_factor",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.POWER_FACTOR,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=3,
+        value_fn=lambda device: device.grid_meter.power_factor,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_exported_energy",
+        translation_key="meter_exported_energy",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.ENERGY,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        suggested_display_precision=2,
+        value_fn=lambda device: (
+            abs(device.grid_meter.exported_energy)  # type: ignore[union-attr]
+            if device.grid_meter is not None
+            else None
+        ),
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_imported_energy",
+        translation_key="meter_imported_energy",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.ENERGY,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        suggested_display_precision=2,
+        value_fn=lambda device: device.grid_meter.accumulated_energy,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_status",
+        translation_key="meter_status",
+        component="grid_meter",
+        report_name="grid_meter",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        icon="mdi:electric-switch",
+        value_fn=lambda device: (
+            label(METER_STATUS, device.grid_meter.status)  # type: ignore[union-attr]
+            if device.grid_meter is not None
+            else None
+        ),
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_type",
+        translation_key="meter_type",
+        component="grid_meter",
+        report_name="grid_meter",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        icon="mdi:information-outline",
+        value_fn=lambda device: (
+            label(METER_TYPE, device.grid_meter.meter_type)  # type: ignore[union-attr]
+            if device.grid_meter is not None
+            else None
+        ),
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_a_voltage",
+        translation_key="meter_phase_a_voltage",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.VOLTAGE,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_a_voltage,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_b_voltage",
+        translation_key="meter_phase_b_voltage",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.VOLTAGE,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_b_voltage,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_c_voltage",
+        translation_key="meter_phase_c_voltage",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.VOLTAGE,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_c_voltage,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_a_current",
+        translation_key="meter_phase_a_current",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.CURRENT,
+        native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_a_current,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_b_current",
+        translation_key="meter_phase_b_current",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.CURRENT,
+        native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_b_current,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_c_current",
+        translation_key="meter_phase_c_current",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.CURRENT,
+        native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_c_current,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_reactive_power",
+        translation_key="meter_reactive_power",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.REACTIVE_POWER,
+        native_unit_of_measurement=UnitOfReactivePower.VOLT_AMPERE_REACTIVE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.reactive_power,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_frequency",
+        translation_key="meter_frequency",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.FREQUENCY,
+        native_unit_of_measurement=UnitOfFrequency.HERTZ,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.frequency,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_reactive_energy",
+        translation_key="meter_reactive_energy",
+        component="grid_meter",
+        report_name="grid_meter",
+        native_unit_of_measurement="kvarh",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        suggested_display_precision=2,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.accumulated_reactive_power,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_line_voltage_ab",
+        translation_key="meter_line_voltage_ab",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.VOLTAGE,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.line_voltage_ab,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_line_voltage_bc",
+        translation_key="meter_line_voltage_bc",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.VOLTAGE,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.line_voltage_bc,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_line_voltage_ca",
+        translation_key="meter_line_voltage_ca",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.VOLTAGE,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.line_voltage_ca,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_a_power",
+        translation_key="meter_phase_a_power",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.POWER,
+        native_unit_of_measurement=UnitOfPower.WATT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_a_power,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_b_power",
+        translation_key="meter_phase_b_power",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.POWER,
+        native_unit_of_measurement=UnitOfPower.WATT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_b_power,  # type: ignore[union-attr]
+    ),
+    HuaweiSensorEntityDescription(
+        key="meter_phase_c_power",
+        translation_key="meter_phase_c_power",
+        component="grid_meter",
+        report_name="grid_meter",
+        device_class=SensorDeviceClass.POWER,
+        native_unit_of_measurement=UnitOfPower.WATT,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        entity_registry_enabled_default=False,
+        value_fn=lambda device: device.grid_meter.phase_c_power,  # type: ignore[union-attr]
+    ),
 )
 
 
@@ -486,7 +743,7 @@ class HuaweiSunSensor(HuaweiSunEntity, SensorEntity):
         description: HuaweiSensorEntityDescription,
     ) -> None:
         """Initialize the sensor."""
-        super().__init__(coordinator)
+        super().__init__(coordinator, description.component)
         self.entity_description = description
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{description.key}"
 
@@ -513,7 +770,7 @@ class HuaweiSunEnergySensor(HuaweiSunEntity, RestoreSensor):
         description: HuaweiSensorEntityDescription,
     ) -> None:
         """Initialize the lifetime energy sensor."""
-        super().__init__(coordinator)
+        super().__init__(coordinator, description.component)
         self.entity_description = description
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{description.key}"
 
