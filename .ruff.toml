@@ -22,6 +22,8 @@ ignore = [
 fixture-parentheses = false
 
 [lint.isort]
+force-sort-within-sections = true
+known-first-party = ["homeassistant"]
 known-third-party = ["hassfest"]
 combine-as-imports = true
 split-on-trailing-comma = false
